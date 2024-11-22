@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+    id        Int      @id @default(autoincrement())
+    firstName String
+    lastName  String
+    email     String   @unique
+    password  String
+
+    reviews   Review[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Review{
+    id        Int      @id @default(autoincrement())
+    isbn      String
+    userId    Int
+    title     String
+    author    String
+    review    String  @db.VarChar(1000)
+    rating    Int
+
+    user      User     @relation(fields: [userId], references: [id])
+    book      Book     @relation(fields: [isbn], references: [isbn])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Book{
+    isbn          String    @id
+    totalRating   Int       @default(0)
+    totalReviews  Int       @default(0)
+
+    reviews       Review[]
+
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+}
